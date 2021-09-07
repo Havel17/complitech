@@ -1,11 +1,23 @@
 package com.example.complitech
 
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.complitech.repository.LocalRepository
 import com.example.complitech.model.Character
+import com.example.complitech.model.GetCharacter
 import com.example.complitech.model.Result
 import com.example.complitech.repository.RetrofitClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.Callback
+import retrofit2.Call
+import retrofit2.Response
+import java.net.HttpRetryException
+import kotlin.coroutines.coroutineContext
+import retrofit2.Callback as Callback1
 
 class MainViewModel(private val repository: LocalRepository) : ViewModel() {
     var allCharacter = MutableLiveData<MutableList<Character>>()
@@ -51,7 +63,7 @@ class MainViewModel(private val repository: LocalRepository) : ViewModel() {
     
     fun find(findWord: String): MutableList<Character>? {
         val findedList: MutableList<Character> = mutableListOf()
-        if (findWord == ""){
+        if (findWord == "") {
             return allCharacter.value
         }
         allCharacter.value?.forEachIndexed { i, s ->

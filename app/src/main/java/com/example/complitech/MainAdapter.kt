@@ -1,21 +1,26 @@
 package com.example.complitech
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.complitech.model.Character
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.model_character.view.*
+import java.lang.Exception
 
 
 class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
     var characters = mutableListOf<Character>()
+    
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         val view = LayoutInflater
             .from(parent.context)
             .inflate(R.layout.model_character, parent, false)
         return MainViewHolder(view)
+        
     }
     
     override fun getItemCount() = characters.size
@@ -23,7 +28,6 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val character = characters[position]
         holder.bind(character)
-        
         var type = true
         if (character.type == "") type = false
         
@@ -34,12 +38,13 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
                 holder.itemView.status.visibility = View.VISIBLE
                 if (type) holder.itemView.type.visibility = View.VISIBLE
                 holder.itemView.gender.visibility = View.VISIBLE
-            }else(viewGone(holder))
+            } else (viewGone(holder))
         }
         viewGone(holder)
     }
     
     class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
         private val image = itemView.image
         private val name = itemView.name
         private val episode = itemView.episode
