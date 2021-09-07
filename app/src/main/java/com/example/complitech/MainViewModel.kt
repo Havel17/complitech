@@ -1,6 +1,5 @@
 package com.example.complitech
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.complitech.repository.LocalRepository
@@ -11,9 +10,8 @@ import com.example.complitech.repository.RetrofitClient
 class MainViewModel(private val repository: LocalRepository) : ViewModel() {
     var allCharacter = MutableLiveData<MutableList<Character>>()
     
-    suspend fun getAll(): LiveData<MutableList<Character>> {
+    suspend fun getAll() {
         allCharacter.postValue(repository.getAll())
-        return allCharacter
     }
     
     suspend fun addAll() {
@@ -49,5 +47,30 @@ class MainViewModel(private val repository: LocalRepository) : ViewModel() {
             newlist.add(ch)
         }
         return newlist
+    }
+    
+    fun find(findWord: String): MutableList<Character>? {
+        val findedList: MutableList<Character> = mutableListOf()
+        if (findWord == ""){
+            return allCharacter.value
+        }
+        allCharacter.value?.forEachIndexed { i, s ->
+            var count = 0
+            var j = 0
+            for (i in 0..s.name!!.lastIndex) {
+                if (s.name!![i].equals(findWord[j], ignoreCase = true)) {
+                    count++; j++
+                    if (count == findWord.length) {
+                        j = 0; count = 0
+                        findedList.add(s)
+                        return@forEachIndexed
+                    }
+                } else {
+                    j = 0; count = 0
+                }
+            }
+        }
+        
+        return findedList
     }
 }

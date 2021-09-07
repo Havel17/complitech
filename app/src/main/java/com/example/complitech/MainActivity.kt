@@ -1,8 +1,11 @@
 package com.example.complitech
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.TextUtils
 import android.widget.SearchView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -10,10 +13,8 @@ import com.example.complitech.dao.Database
 import com.example.complitech.model.Character
 import com.example.complitech.repository.LocalRepository
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+
 
 class MainActivity : AppCompatActivity() {
     
@@ -38,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         
         recyclerview.layoutManager = LinearLayoutManager(this)
         recyclerview.adapter = mainAdapter
+        
         coroutine.launch {
             viewModel.addAll()
             viewModel.getAll()
@@ -45,61 +47,28 @@ class MainActivity : AppCompatActivity() {
                 refresh
             }
         }
+        
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-        
                 return true
             }
     
             override fun onQueryTextChange(newText: String?): Boolean {
-                find(newText!!)
-                return false
+                if (newText != null ) {
+                    mainAdapter.characters = viewModel.find(newText)!!
+                    mainAdapter.notifyDataSetChanged()
+                }
+                return true
             }
-    
         })
     }
-    
     private val refresh = Observer<MutableList<Character>> {
         characters = it
         mainAdapter.characters = characters
         mainAdapter.notifyDataSetChanged()
     }
     
-    fun find(findWord: String) {
-        val test = characters
-        val finded: MutableList<Character> = mutableListOf()
-        if (findWord == "") {
-        } else {
-            test.forEachIndexed { i, s ->
-                var count = 0
-                var j = 0
-                for (i in 0..s.name!!.lastIndex) {
-                    if (s.name!![i].equals(
-                            findWord[j],
-                            ignoreCase = true
-                        )
-                    ) {
-                        count++
-                        j++
-                        if (count == findWord.length) {
-                            j = 0
-                            count = 0
-                            finded.add(s)
-                            return@forEachIndexed
-                        }
-                    } else {
-                        j = 0
-                        count = 0
-                    }
-                }
-                
-            }
-            
-        }
-        mainAdapter.characters.clear()
-        mainAdapter.characters.addAll(finded)
-        mainAdapter.notifyDataSetChanged()
-    }
+   
     
 }
 
